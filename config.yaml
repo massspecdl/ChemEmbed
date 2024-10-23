@@ -1,0 +1,20 @@
+# config.yaml
+
+# Input files
+msp_file: 'input_spectra_with_smile.msp'  # or 'input_spectra.msp' if you don't have SMILES   ('input_spectra_with_smile.msp')
+reference_database: 'sample_reference_database.pkl'  # Path to your reference database
+model_path: 'model.mol2vec_ints_nl_ddb_0_01_up_wo_dup_bin'  # Path to your trained model
+
+# Output files
+preprocessed_data: 'preprocessed_data_withSmile3.pkl'  # Path to save preprocessed data
+prediction_results: 'prediction_results_withSmile3.csv'  # Path to save prediction results
+
+# Parameters
+tolerance: 0.01
+max_mz: 700
+resolution: 0.01
+intensity_threshold: 1  # in percentage
+top_n_candidates: 3     # Number of top candidates to retrieve
+
+# Input type
+input_file_type: 'with_smiles'  # Options: 'with_smiles', 'without_smiles'
