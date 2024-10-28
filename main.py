@@ -41,6 +41,7 @@ def main():
 
     config = load_config(args.config)
     input_type = config['input_file_type']
+    adduct = config['adduct']
 
     if input_type == 'with_smiles':
         # Processing for 'with_smiles'
@@ -77,10 +78,10 @@ def main():
     prediction_df = predict_fn(model_cnn, test_loader, input_type)
 
     # Load and preprocess reference database
-    reference_df = reference_loader_fn(config['reference_database'])
+    reference_df = reference_loader_fn(config['reference_database'], adduct)
 
     # Match predictions to reference database
-    final_results_df = matcher_fn(prediction_df, reference_df, config['top_n_candidates'], input_type)
+    final_results_df = matcher_fn(prediction_df, reference_df, config['top_n_candidates'], input_type, adduct)
 
     # Save final results
     final_results_df.to_csv(config['prediction_results'], index=False)
