@@ -14,7 +14,8 @@ tolerance: 0.01
 max_mz: 700
 resolution: 0.01
 intensity_threshold: 1  # in percentage
-top_n_candidates: 3     # Number of top candidates to retrieve
+top_n_candidates: 5     # Number of top candidates to retrieve
 
 # Input type
 input_file_type: 'with_smiles'  # Options: 'with_smiles', 'without_smiles'
+adduct: '+' # Options: '-'
