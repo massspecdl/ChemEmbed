@@ -305,22 +305,61 @@ def process_data_with_smiles(norm_df, tolerance, resolution, max_mz):
 
     # Drop duplicates based on 'up_inchikey'
     # unique_keys_df = norm_df[['up_inchikey', 'smile', 'Precursor']].drop_duplicates('up_inchikey')
+    # Check if value is NaN using pd.isna()
+    norm_df['up_inchikey'] = "Nan"
+    for i in range(len(norm_df)):
+        mol = Chem.MolFromSmiles(norm_df['smile'].iloc[i])
+        # Generate the InChIKey
+        inchikey = Chem.InchiToInchiKey(Chem.MolToInchi(mol))
 
-    aggregated = norm_df.groupby('smile').agg({
+        norm_df.loc[i, 'up_inchikey'] = inchikey[:14]
+
+    list_data = [norm_df]
+    # Assuming `list_data` is a list of DataFrames with the columns: ['up_inchikey', 'spectra', 'smile', 'Precursor']
+    list_final_data = []
+
+    for data in list_data:
+        # Drop duplicates based on 'up_inchikey' to work with unique keys directly
+        unique_keys_df = data[['up_inchikey', 'smile', 'Precursor']].drop_duplicates('up_inchikey')
+
+        # Aggregate spectra and smiles by 'up_inchikey'
+        aggregated = data.groupby('up_inchikey').agg({
+            'spectra': lambda x: [y for sublist in x for y in sublist],  # Flatten the list of lists
+            'smile': 'first'  # Assuming the first smile per up_inchikey is representative
+        }).reset_index()
+
+        # Merge with unique_keys_df to get 'Precursor' and 'smile' columns aligned with aggregated data
+        final_df = pd.merge(aggregated, unique_keys_df, on='up_inchikey', suffixes=('', '_drop')).drop(['smile_drop'],
+                                                                                                       axis=1)
+
+        # At this point, 'final_df' contains unique 'up_inchikey' rows with aggregated 'spectra', and first 'smile' and 'Precursor' values.
+
+        # Split the spectra into 'mz' and 'ints'
+        final_df['mz'], final_df['ints'] = zip(*final_df['spectra'].apply(lambda x: zip(*x) if x else ([], [])))
+
+        # Dropping 'spectra' as it's already split into 'mz' and 'ints'
+        final_df.drop(['spectra'], axis=1, inplace=True)
+
+        # Drop duplicates based on 'smile'
+        final_df.drop_duplicates(subset=['smile'], inplace=True)
+
+        list_final_data.append(final_df)
+    final_df_pr_spec = list_final_data[0]
+    '''aggregated = norm_df.groupby('smile').agg({
         'spectra': lambda x: [y for sublist in x for y in sublist],
         'Precursor': 'first'
-    }).reset_index()
+    }).reset_index()'''
 
     # final_df = pd.merge(aggregated, unique_keys_df, on='up_inchikey', suffixes=('', '_drop')).drop(['smile_drop'], axis=1)
 
     # Split the spectra into 'mz' and 'ints'
-    aggregated['mz'], aggregated['ints'] = zip(*aggregated['spectra'].apply(lambda x: list(zip(*x)) if x else ([], [])))
-    aggregated.drop(['spectra'], axis=1, inplace=True)
-    aggregated.drop_duplicates(subset=['smile'], inplace=True)
-    aggregated.reset_index(drop=True, inplace=True)
+    #aggregated['mz'], aggregated['ints'] = zip(*aggregated['spectra'].apply(lambda x: list(zip(*x)) if x else ([], [])))
+    #aggregated.drop(['spectra'], axis=1, inplace=True)
+    #aggregated.drop_duplicates(subset=['smile'], inplace=True)
+    final_df_pr_spec.reset_index(drop=True, inplace=True)
 
     # Continue processing similar to 'without_smiles'
-    return _process_common(aggregated, tolerance, resolution, max_mz)
+    return _process_common(final_df_pr_spec, tolerance, resolution, max_mz)
 
 def process_data_without_smiles(norm_df, tolerance, resolution, max_mz):
     """
