@@ -7,7 +7,8 @@ from rdkit.Chem import rdMolDescriptors
 from rdkit import DataStructs
 from numpy.linalg import norm
 
-def load_reference_database_with_smiles(path):
+
+def load_reference_database_with_smiles(path, adduct):
     """
     Load and preprocess the reference database for 'with_smiles' input.
     """
@@ -31,7 +32,10 @@ def load_reference_database_with_smiles(path):
         m_f = calculate_molecular_formula(mol)
         mol_weight = rdMolDescriptors.CalcExactMolWt(mol)
         proton_mass = 1.007276  # mass of a proton in Da
-        precursor_mass_positive = mol_weight + proton_mass
+        if adduct == '+':
+            precursor_mass_positive = mol_weight + proton_mass
+        else:
+            precursor_mass_positive = mol_weight - proton_mass
         pr_mass.append(round(precursor_mass_positive, 3))
         mol_form_mv.append(m_f)
 
@@ -42,7 +46,7 @@ def load_reference_database_with_smiles(path):
 
     return final_mol2vec
 
-def load_reference_database_without_smiles(path):
+def load_reference_database_without_smiles(path, adduct):
     """
     Load and preprocess the reference database for 'without_smiles' input.
     """
@@ -59,7 +63,11 @@ def load_reference_database_without_smiles(path):
                 continue
             mol_weight = rdMolDescriptors.CalcExactMolWt(mol)
             proton_mass = 1.007276  # mass of a proton in Da
-            precursor_mass_positive = mol_weight + proton_mass
+            if adduct == '+':
+                precursor_mass_positive = mol_weight + proton_mass
+            else:
+                precursor_mass_positive = mol_weight - proton_mass
+            #precursor_mass_positive = mol_weight + proton_mass
             pr_mass.append(round(precursor_mass_positive, 3))
         final_mol2vec['Precursormz'] = pr_mass
         final_mol2vec.dropna(subset=['Precursormz'], inplace=True)
@@ -67,35 +75,43 @@ def load_reference_database_without_smiles(path):
     return final_mol2vec
 
 
-def match_predictions_to_reference_with_smiles(prediction_df, reference_df, top_n, input_file_type):
+def match_predictions_to_reference_with_smiles(prediction_df, reference_df, top_n, input_file_type, adduct):
     data_test = prediction_df.copy()
     data_test.reset_index(drop=True, inplace=True)
 
-    # Truncate masses in data_test to three decimal places without rounding
-    ls_saam = []
-    for i in data_test.Precursor:
-        truncated_mass = float(int(i * 1000) / 1000.0)
-        ls_saam.append(truncated_mass)
-    data_test['update_mass'] = ls_saam
+    g_sm_ls_1 = data_test['smile'].tolist()
+    g_sm_ls = [item[0] for item in g_sm_ls_1]
 
-    # Filter data_test where update_mass is in reference_df['Precursormz']
-    final_test_1 = data_test[data_test['update_mass'].isin(reference_df['Precursormz'])].copy()
+    def calculate_molecular_formula(mol):
+        formula = Chem.rdMolDescriptors.CalcMolFormula(mol)
+        return formula
 
-    up_mass = final_test_1['Precursor'].tolist()
-    new_mass = []
-    for i in up_mass:
-        new_mass.append(float(int(i * 1000) / 1000.0))
+    pr_mass = []
+    test_mf = []
+    for i in range(len(g_sm_ls)):
+        # Define a molecule
 
-    final_test_1['new_mass'] = new_mass
+        mol = Chem.MolFromSmiles(g_sm_ls[i])
+        m_f = calculate_molecular_formula(mol)
+        # Calculate the exact molecular weight
+        mol_weight = rdMolDescriptors.CalcExactMolWt(mol)
 
-    check_test = final_test_1[final_test_1['new_mass'].isin(reference_df['Precursormz'])].copy()
-    del check_test['update_mass']
-    check_test = check_test.rename(columns={'new_mass': 'update_mass'})
+        proton_mass = 1.007276  # mass of a proton in Da
 
-    check_2 = data_test[~data_test['update_mass'].isin(final_test_1['update_mass'])].copy()
-    final_test_up = pd.concat([check_2, check_test], ignore_index=True)
+        # For positive ionization ([M+H]+)
+        if adduct == '+':
+            precursor_mass_positive = mol_weight + proton_mass
+        else:
+            precursor_mass_positive = mol_weight - proton_mass
 
-    ls_1 = final_test_up['tree_out'].tolist()
+        pr_mass.append(round(precursor_mass_positive, 3))
+        test_mf.append(m_f)
+
+    data_test['predict_mass'] = pr_mass
+
+    data_test['Molecular_Formula'] = test_mf
+
+    ls_1 = data_test['tree_out'].tolist()
 
     pd.options.mode.chained_assignment = None
 
@@ -104,8 +120,8 @@ def match_predictions_to_reference_with_smiles(prediction_df, reference_df, top_
     final_EU = []
     final_Tanimoto = []
 
-    for i in range(len(final_test_up)):
-        new_df = reference_df[reference_df['Precursormz'] == final_test_up['update_mass'].iloc[i]].copy()
+    for i in range(len(data_test)):
+        new_df = reference_df[reference_df['Precursormz'] == data_test['predict_mass'].iloc[i]].copy()
         new_df.reset_index(drop=True, inplace=True)
         ls_eu = []
         ls_tani = []
@@ -116,7 +132,7 @@ def match_predictions_to_reference_with_smiles(prediction_df, reference_df, top_
             ls_eu.append(cosine_similarity.item())
 
             # Calculate Tanimoto similarity
-            ground_smile = final_test_up['smile'].iloc[i]
+            ground_smile = data_test['smile'].iloc[i]
             candidate_smile = new_df['smile'].iloc[j]
             mol1 = Chem.MolFromSmiles(ground_smile[0])
             mol2 = Chem.MolFromSmiles(candidate_smile)
@@ -131,7 +147,7 @@ def match_predictions_to_reference_with_smiles(prediction_df, reference_df, top_
         new_df['cosine'] = ls_eu
         new_df['Tanimoto'] = ls_tani
         # Assign Unique_ID to all rows (Unique_ID is now the SMILES string)
-        new_df['Unique_ID'] = [final_test_up['Unique_ID'].iloc[i]] * len(new_df)
+        new_df['Unique_ID'] = [data_test['Unique_ID'].iloc[i]] * len(new_df)
         new_df.sort_values('cosine', ascending=False, inplace=True)
 
         if len(new_df) > 0:
@@ -185,7 +201,7 @@ def match_predictions_to_reference_with_smiles(prediction_df, reference_df, top_
 
 
 
-def match_predictions_to_reference_without_smiles(prediction_df, reference_df, top_n, input_file_type):
+def match_predictions_to_reference_without_smiles(prediction_df, reference_df, top_n, input_file_type,adduct):
     """
     Match predictions to reference database and extract top candidates for 'without_smiles' input.
     """
