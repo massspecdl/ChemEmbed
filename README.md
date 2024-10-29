@@ -72,10 +72,6 @@ The application is configured through a `config.yaml` file, which contains sever
 - `prediction_results`: Path for the final prediction results CSV file. Supports variable substitution for `top_n_candidates`.
 
 #### Parameters
-- `tolerance`: Tolerance for grouping m/z values during preprocessing. (default: 0.01)
-- `max_mz`: Maximum m/z value to consider when aligning spectra. (default: 700)
-- `resolution`: m/z resolution for aligning spectra. (default: 0.01)
-- `intensity_threshold`: Minimum intensity percentage to consider peaks. (default: 1)
 - `top_n_candidates`: Number of top candidate molecules to retrieve from the reference database. (default: 5)
 - `input_file_type`: Type of the input MSP file. Options are 'with_smiles' and 'without_smiles'. (default: 'with_smiles')
 
