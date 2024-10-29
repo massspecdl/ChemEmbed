@@ -1,6 +1,6 @@
-# Mass Spectrometry Data Processing and Prediction Pipeline
+# A deep learning framework for metabolite identification using enhanced MS/MS data and multidimensional molecular embeddings
 
-The Mass Spectrometry Data Processing and Prediction Pipeline is designed to process mass spectrometry data, perform predictions using a trained Convolutional Neural Network (CNN) model, and match the predictions against a reference database to identify potential candidate molecules.
+A deep learning framework for metabolite identification using enhanced MS/MS data and multidimensional molecular embeddings is designed to process mass spectrometry data, perform predictions using a trained Convolutional Neural Network (CNN) model, and match the predictions against a reference database to identify potential candidate molecules.
 
 
 ## Features
