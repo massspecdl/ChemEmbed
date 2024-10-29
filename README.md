@@ -112,6 +112,7 @@ adduct: Choose '-' for M-H or '+' for M+H based on the adduct type.
 This format includes SMILES notation, which provides the molecule's structure, followed by metadata and peak data.
 ##### Format:
 ```bash smile: <SMILES notation>
+smile: <smile >
 Precursor: <precursor m/z value>
 Adduct: <adduct type>
 Num Peaks: <number of peaks>
