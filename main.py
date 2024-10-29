@@ -45,7 +45,12 @@ def main():
 
     if input_type == 'with_smiles':
         # Processing for 'with_smiles'
-        msp_df = msp_to_dataframe_with_smiles(config['msp_file'])
+        if config['adduct'] == "+":
+            print("Positive Point")
+            msp_df = msp_to_dataframe_with_smiles(config['msp_file_positive'])
+        else:
+            print("Negative Point")
+            msp_df = msp_to_dataframe_with_smiles(config['msp_file_negative'])
         norm_df = preprocess_spectra_with_smiles(msp_df, config['intensity_threshold'])
         final_up = process_data_with_smiles(norm_df, config['tolerance'], config['resolution'], config['max_mz'])
         final_up.to_pickle(config['preprocessed_data'])
@@ -56,7 +61,10 @@ def main():
         matcher_fn = match_predictions_to_reference_with_smiles
     else:
         # Processing for 'without_smiles'
-        msp_df = msp_to_dataframe_without_smiles(config['msp_file'])
+        if config['adduct'] == "+":
+            msp_df = msp_to_dataframe_without_smiles(config['msp_file_positive'])
+        else:
+            msp_df = msp_to_dataframe_without_smiles(config['msp_file_negative'])
         norm_df = preprocess_spectra_without_smiles(msp_df, config['intensity_threshold'])
         final_up = process_data_without_smiles(norm_df, config['tolerance'], config['resolution'], config['max_mz'])
         final_up.to_pickle(config['preprocessed_data'])
@@ -71,8 +79,12 @@ def main():
                              drop_last=True,
                              shuffle=False,
                              num_workers=0)
-
-    model_cnn = load_model(config['model_path'])
+    if config['adduct'] == "+":
+        #print("Positive model load")
+        model_cnn = load_model(config['model_path_positive'])
+    else:
+        #print("Negative model load")
+        model_cnn = load_model(config['model_path_negative'])
 
     # Make predictions
     prediction_df = predict_fn(model_cnn, test_loader, input_type)
