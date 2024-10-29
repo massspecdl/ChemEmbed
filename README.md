@@ -107,6 +107,57 @@ adduct: Choose '-' for M-H or '+' for M+H based on the adduct type.
 
 - `without_smiles`: Use this option if your MSP file does not include SMILES strings. The pipeline will process the data accordingly and perform candidate matching without relying on SMILES information.
 
+### MSP File Format Guide
+1. MSP File with SMILES
+This format includes SMILES notation, which provides the molecule's structure, followed by metadata and peak data.
+Format:
+smile: <SMILES notation>
+Precursor: <precursor m/z value>
+Adduct: <adduct type>
+Num Peaks: <number of peaks>
+<m/z> <intensity>
+<m/z> <intensity>
+...
+Example:
+smile: Clc1ccc(cc1)S(=O)(=O)NC2CC2
+Precursor: 230.0048
+Adduct: [M+H]+
+Num Peaks: 16
+63.9623 0.15257457101400854
+64.9701 0.32720519597920816
+...
+
+2. MSP File without SMILES
+
+This format does not include SMILES notation and instead begins with a unique identifier followed by metadata and peak data.
+Format:
+Name: <unique identifier>
+Precursor: <precursor m/z value>
+Adduct: <adduct type>
+Num Peaks: <number of peaks>
+<m/z> <intensity>
+<m/z> <intensity>
+...
+
+Example:
+Name: ID1
+Precursor: 478.1471
+Adduct: [M-H]-
+Num Peaks: 101
+130.9882 11.57
+143.6251 2.41
+...
+
+Key Fields in MSP Files
+SMILES (if present): A line representing the molecular structure.
+Precursor: The m/z value of the precursor ion.
+Adduct: Specifies the adduct type (e.g., [M-H]-).
+Num Peaks: Total number of peaks in the entry.
+Peak Data: m/z and intensity values for each peak, with one peak per line.
+
+
+
+
 ### Dependencies
 
 Ensure you have the following libraries installed:
