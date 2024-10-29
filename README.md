@@ -82,26 +82,27 @@ The application is configured through a `config.yaml` file, which contains sever
 #### Example `config.yaml` File
 
 ```yaml
-# config.yaml
+Edit the config.yaml file to set up paths and parameters based on your requirements. Key options include:
 
-# Input files
-msp_file: 'input_spectra.msp'                    # Path to your MSP file
-reference_database: 'sample_reference_database.pkl'  # Path to your reference database
-model_path: 'model.mol2vec_ints_nl_ddb_0_01_up_wo_dup_bin'  # Path to your trained model
+Input Files:
 
-# Output files
-preprocessed_data: 'preprocessed_data.pkl'       # Path to save preprocessed data
-prediction_results: 'prediction_results.csv'     # Path to save prediction results
+msp_file_positive: Path to the positive mode spectra file (input_spectra_with_smile.msp if containing SMILES, or input_spectra.msp otherwise).
+msp_file_negative: Path to the negative mode spectra file (sample_negative_file_without_smile.msp if not containing SMILES, or sample_negative_file.msp otherwise).
+reference_database: Path to the reference database file (e.g., sample_reference_database.pkl).
+Model Files:
+model_path_positive: Path to the trained positive mode model.
+model_path_negative: Path to the trained negative mode model.
+Output Files:
 
-# Parameters
-tolerance: 0.01
-max_mz: 700
-resolution: 0.01
-intensity_threshold: 1        # Intensity threshold in percentage
-top_n_candidates: 5           # Number of top candidates to retrieve
+preprocessed_data: Path to save preprocessed data.
+prediction_results: Path to save prediction results.
+Parameters:
 
-# Input type
-input_file_type: 'with_smiles'   # Options: 'with_smiles', 'without_smiles'
+top_n_candidates – adjust as needed.
+Input Type and Adduct:
+input_file_type: Set as with_smiles or without_smiles.
+adduct: Choose '-' for M-H or '+' for M+H based on the adduct type.
+
 ```
 
 ### Using Different Input File Types
