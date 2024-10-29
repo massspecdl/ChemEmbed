@@ -102,6 +102,7 @@ def match_predictions_to_reference_with_smiles(prediction_df, reference_df, top_
         if adduct == '+':
             precursor_mass_positive = mol_weight + proton_mass
         else:
+            #print("Negative more")
             precursor_mass_positive = mol_weight - proton_mass
 
         pr_mass.append(round(precursor_mass_positive, 3))
