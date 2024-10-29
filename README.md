@@ -21,8 +21,8 @@ Before running the pipeline, ensure that all dependencies are installed and prop
 **Clone this repository to your local machine**:
 
 ```bash
-git clone https://github.com/yourusername/your_project.git
-cd your_project
+git clone https://github.com/massspecdl/MolShanakht.git
+cd MolShanakht
 ```
 
 **Create a virtual environment (optional but recommended)**:
@@ -42,8 +42,9 @@ pip install -r requirements.txt
 
 ```bash
 pip install gdown
-gdown https://drive.google.com/uc?id=your_file_id
-unzip data_and_model.zip
+gdown https://drive.google.com/drive/folders/1GEAiTPPTUsLJxYYOr2zVuAm_74LyAwAw?usp=sharing
+unzip Data_and_model_folder.zip
+Put all files in folder where you put all codes
 ```
 
 Note: If a `requirements.txt` file is not present, install the dependencies individually (see Dependencies).
