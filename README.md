@@ -42,7 +42,7 @@ pip install -r requirements.txt
 
 ```bash
 pip install gdown
-gdown https://drive.google.com/drive/folders/1GEAiTPPTUsLJxYYOr2zVuAm_74LyAwAw?usp=sharing
+gdown https://drive.google.com/drive/folders/1GEAiTPPTUsLJxYYOr2zVuAm_74LyAwAw?usp=sharing --folder
 unzip Data_and_model_folder.zip
 Put all files in folder where you put all codes
 ```
