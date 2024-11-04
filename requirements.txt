@@ -163,7 +163,6 @@ ms2deepscore==0.3.0.1
 ms2query==0.7.4
 msgpack==1.0.8
 multidict==6.0.5
-multiprocess @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_5fxbcbjtcd/croot/multiprocess_1692294387834/work
 murmurhash==1.0.10
 nbclassic==0.5.5
 nbclient==0.7.3
@@ -271,7 +270,6 @@ sentencepiece==0.2.0
 seqeval==1.2.2
 shellingham==1.5.4
 simplejson==3.19.1
-six @ file:///tmp/build/80754af9/six_1644875935023/work
 skl2onnx==1.14.0
 sktime==0.21.1
 smart-open==6.3.0
