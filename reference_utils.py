@@ -255,7 +255,7 @@ def match_predictions_to_reference_without_smiles(prediction_df, reference_df, t
             for k in range(min(len(new_df), top_n)):
                 top_smiles.append(new_df['smile'].iloc[k])  # Assuming 'smile' exists in reference_df
                 top_euclidean_distances.append(new_df['cosine'].iloc[k])
-                top_inchikey.append(new_df['up_inchikey'].iloc[k])  # Assuming 'inchikey' exists in reference_df
+                top_inchikey.append(new_df['inchikey'].iloc[k])  # Assuming 'inchikey' exists in reference_df
 
             final_smile.append(top_smiles)
             final_EU.append(top_euclidean_distances)
