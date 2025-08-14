@@ -1,0 +1,18 @@
+# OS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# Virtual env & IDE
+venv/
+.env/
+.idea/
+
+# Large data (optional)
+data/
+*.zip
+*.tar.gz
