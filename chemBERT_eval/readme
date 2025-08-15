@@ -1,0 +1,104 @@
+# ChemBERT Evaluation (`chemBERT_eval`)
+
+Evaluate **ChemEmbed** using:
+- **ChemBERTa + DNN**
+- **ChemBERTa + CNN**
+- **Mol2Vec + DNN**
+
+This module consumes MS/MS spectra, predicts spectrum embeddings, compares them to a precomputed reference embedding library, and reports **Top-1** and **Top-5** retrieval accuracy.
+
+---
+
+## 📂 Folder Structure
+chemBERT_eval/
+├── chembert_cnn/
+│ ├── dataset.py # Dataset utilities for CNN head
+│ ├── main.py # CNN inference & evaluation
+│ └── model_cnn.py # CNN model architecture
+├── chembert_dnn/
+│ ├── dataset.py # Dataset utilities for DNN head
+│ ├── main.py # DNN inference & evaluation
+│ └── model_dnn.py # DNN model architecture
+├── data_preprocessing.py # (Optional) Convert raw spectra to pickle/test sets
+└── README.md
+
+MSP File Format
+
+Each spectrum is a block:
+
+smile: <SMILES string>
+Precursor: <precursor m/z value>
+Adduct: <adduct type>
+Num Peaks: <number of peaks>
+<m/z> <intensity>
+<m/z> <intensity>
+...
+
+Example
+
+smile: Clc1ccc(cc1)S(=O)(=O)NC2CC2
+Precursor: 230.0048
+Adduct: [M+H]+
+Num Peaks: 16
+63.9623 0.15257457101400854
+64.9701 0.32720519597920816
+91.0577 0.4871013158922814
+118.0508 0.2928894742175346
+...
+
+
+Notes
+
+smile — Canonical SMILES (required for accuracy computation).
+
+Precursor — Precursor m/z.
+
+Adduct — e.g., [M+H]+
+
+Num Peaks — Number of m/z–intensity pairs.
+
+Separate entries with a blank line.
+
+🚀 Usage
+
+Below are the minimal commands (no optional flags) for each evaluation track.
+
+1) Mol2Vec + DNN
+python main.py \
+  --model "/path/to/Mol2vec_DNN_trained_model" \
+  --mspfile "/path/to/input_spectra_with_smiles.msp" \
+  --mol2vec "/path/to/final_mol2vec_300_dimension.pkl"
+
+
+--mol2vec points to the Mol2Vec reference embeddings (typically 300-dim).
+
+2) ChemBERTa + DNN
+python main.py \
+  --model "/path/to/ChemBERT_DNN_trained_model" \
+  --mspfile "/path/to/input_spectra_with_smiles.msp" \
+  --mol2vec "/path/to/final_chembert2a_384_dimension.pkl"
+
+3) ChemBERTa + CNN
+python main.py \
+  --model "/path/to/ChemBERT_CNN_trained_model" \
+  --mspfile "/path/to/input_spectra_with_smiles.msp" \
+  --mol2vec "/path/to/final_chembert2a_384_dimension.pkl"
+
+
+Why --mol2vec?
+For backward compatibility the flag name is reused.
+When running ChemBERTa, this flag should point to the ChemBERTa reference embeddings (e.g., 384-dim).
+
+📊 Output
+
+The script reports summary metrics only:
+
+Top-1 Accuracy: <0..1>
+Top-5 Accuracy: <0..1>
+
+
+Top-1 — fraction of spectra where the correct molecule ranks first.
+
+Top-5 — fraction of spectra where the correct molecule appears in the top 5.
+
+No full ranked lists are written by this module.
