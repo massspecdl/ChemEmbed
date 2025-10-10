@@ -21,8 +21,8 @@ Before running the pipeline, ensure that all dependencies are installed and prop
 **Clone this repository to your local machine**:
 
 ```bash
-git clone https://github.com/massspecdl/MolShanakht.git
-cd MolShanakht
+git clone https://github.com/massspecdl/ChemEmbed.git
+cd ChemEmbed
 ```
 
 **Create a virtual environment (optional but recommended)**:
