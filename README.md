@@ -12,6 +12,15 @@ A deep learning framework for metabolite identification using enhanced MS/MS dat
 - **Configurable Parameters:** Allows users to adjust parameters like intensity thresholds, resolution, and the number of top candidates via a YAML configuration file.
 - **Modular Codebase:** Organized into separate modules for easy maintenance and scalability.
 
+## 🧪 Sample Testing Guide
+
+To test **ChemEmbed**, use the provided Jupyter notebook:
+
+- Open **`ChemEmbed_Sample_Test.ipynb`**.
+- Follow the step-by-step instructions included within the notebook.
+
+This notebook demonstrates how to run ChemEmbed on sample data and verify the setup.
+
 ## Setup and Configuration
 
 Before running the pipeline, ensure that all dependencies are installed and properly configured. The application is controlled through a `config.yaml` file, which specifies all input/output paths and parameters.
